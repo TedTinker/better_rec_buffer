@@ -263,16 +263,26 @@ print("\n\nA critic output:\n\n")
 print(v.shape)
 print(v)
 
+from torch.distributions import Normal
+def careful_log_prob(mu, std, e):
+    ongoing = ~torch.isnan(mu)
+    mu[ongoing == False] = 0
+    std[ongoing == False] = 1
+    log_prob = Normal(mu, std).log_prob(mu + e * std)
+    log_prob[ongoing == False] = np.nan
+    return(log_prob)
 
 def careful_loss(predict, target, loss_function):
     loss = 0
     for s in range(predict.shape[1]):
-        p = predict[:,s,:]
-        t = predict[:,s,:]
+        p = predict[:,s]
+        t = target[:,s]
         ongoing = ~torch.isnan(p)
+        # Try making ongoing just one layer! 
         loss += loss_function(p[ongoing], t[ongoing])
     return(loss)
-    
+            
+
 loss = careful_loss(v, v.detach(), F.mse_loss)
 
 print("\n\nLoss:\n\n")
