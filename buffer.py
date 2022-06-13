@@ -1,3 +1,4 @@
+#%%
 from collections import namedtuple
 import numpy as np
 import torch
@@ -287,3 +288,4 @@ loss = careful_loss(v, v.detach(), F.mse_loss)
 
 print("\n\nLoss:\n\n")
 print(loss)
+# %%
